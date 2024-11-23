@@ -24,5 +24,5 @@ function listUsers() {
 }
 
 // Example usage
-addUser("John Doe", "john@example.com");
+//addUser("John Doe", "john@example.com");
 listUsers();
