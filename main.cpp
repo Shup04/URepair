@@ -8,8 +8,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include <functions.cpp>
-
+#include "functions.h"
+#include "structs.h"
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
