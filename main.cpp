@@ -10,8 +10,14 @@
 
 #include "functions.h"
 #include "structs.h"
+#include "sql.h"
 
 int main(int argc, char* argv[]) {
+
+    std::cout << "Setting up the database..." << std::endl;
+    setupDatabase();
+    std::cout << "Database setup complete!" << std::endl;
+    
     if (argc < 2) {
         std::cerr << "ERROR: No operation specified!" << std::endl;
         return 1;

@@ -1,8 +1,16 @@
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
 #include <iostream>
 #include <string>
 #include <fstream>
 
 #include "structs.h"
+
+void addUser(const std::string& name, const std::string& email);
+void listUsers();
+void registerContractor(std::string name, std::vector<std::string> skillset, float minPrice, float maxPrice);
+void addJob(std::string description, std::string requiredSkill, float price, int urgency);
 
 void addUser(const std::string& name, const std::string& email) {
     std::ofstream file("users.txt", std::ios::app); // Append to the file
@@ -37,3 +45,5 @@ void addJob(std::string description, std::string requiredSkill, float price, int
     jobs.push(j);
     std::cout << "SUCCESS: Job added!\n";
 }
+
+#endif //FUNCTIONS_H
