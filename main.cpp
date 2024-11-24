@@ -28,10 +28,14 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         std::string operation = argv[1];
-        if (operation == "addUser" && argc == 4) {
-            addUser(argv[2], argv[3]); // Pass name and email
+        if (operation == "addUser" && argc == 5) {
+            std::cout << argv[2] << " " << argv[3] << " " << argv[4] << std::endl;
+            addContractor(db, argv[2], std::stoi(argv[3]), argv[4]); // Pass name, rate, and skillsets
         } else if (operation == "listContractors") {
             listContractors(db);
+        } else if (operation == "deleteDB") {
+            std::filesystem::remove("urepair.db");
+            std::cout << "Database deleted successfully!" << std::endl;
         } else {
             std::cerr << "ERROR: Invalid operation or arguments!" << std::endl;
             return 1;

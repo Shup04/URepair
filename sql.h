@@ -20,8 +20,7 @@ void setupDatabase() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             skillset TEXT NOT NULL,
-            minPrice REAL NOT NULL,
-            maxPrice REAL NOT NULL
+            rate INTEGER NOT NULL
         );
     )";
 
