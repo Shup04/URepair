@@ -14,22 +14,24 @@
 #include "sql.h"
 
 int main(int argc, char* argv[]) {
+    sqlite3* db;
+    int rc = sqlite3_open("urepair.db", &db);
+
     std::cout << "Welcome to URepair!" << std::endl;
-    if (!std::filesystem::exists("urepair.db")) {
         std::cout << "Setting up the database..." << std::endl;
         setupDatabase();
         std::cout << "Database setup complete!" << std::endl;
         
+        // Frontent doesnt specify function to call
         if (argc < 2) {
             std::cerr << "ERROR: No operation specified!" << std::endl;
             return 1;
         }
-    }   
         std::string operation = argv[1];
         if (operation == "addUser" && argc == 4) {
             addUser(argv[2], argv[3]); // Pass name and email
-        } else if (operation == "listUsers") {
-            listUsers();
+        } else if (operation == "listContractors") {
+            listContractors(db);
         } else {
             std::cerr << "ERROR: Invalid operation or arguments!" << std::endl;
             return 1;

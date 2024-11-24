@@ -7,6 +7,7 @@
 
 // Define Contractor struct
 struct Contractor {
+    int id;
     std::string name;
     std::vector<std::string> skillset;
     float minPrice;
