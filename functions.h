@@ -8,10 +8,10 @@
 #include "structs.h"
 #include <sqlite3.h>
 
-void addUser(const std::string& name, const std::string& email);
-void listUsers();
-void registerContractor(std::string name, std::vector<std::string> skillset, float minPrice, float maxPrice);
-void addJob(std::string description, std::string requiredSkill, float price, int urgency);
+// Implementations for readability
+void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset);
+void listContractors(sqlite3* db);
+
 
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset) {
     const char* sql = "INSERT INTO contractors (name, rate, skillset) VALUES (?, ?, ?);";
@@ -62,6 +62,30 @@ void listContractors(sqlite3* db) {
                   << ", Hourly Rate: " << rate << std::endl;
     }
 
+    sqlite3_finalize(stmt);
+}
+
+void deleteContractor(sqlite3* db, const int& id) {
+    const char* sql = "DELETE FROM contractors WHERE id = ?;";
+    sqlite3_stmt* stmt = nullptr;
+
+    // Prepare the SQL statement
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << "\n";
+        return;
+    }
+
+    // Bind the variables to the prepared statement
+    sqlite3_bind_int(stmt, 1, id);                            
+
+    // Execute the statement
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        std::cerr << "Failed to execute statement: " << sqlite3_errmsg(db) << "\n";
+    } else {
+        std::cout << "Deleted successfully!\n";
+    }
+
+    // Finalize the statement
     sqlite3_finalize(stmt);
 }
 
