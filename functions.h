@@ -117,17 +117,46 @@ void updateContractor(sqlite3* db, const int& id, const std::string& name, const
     sqlite3_finalize(stmt);
 }
 
+std::vector<Contractor> searchContractors(sqlite3* db, const int& rate, const std::string& skillset) {
+    //Contractor c; // Declare contractor object
+    const char* sql = "SELECT * FROM contractors WHERE rate <= ? AND skillset = ?;";
+    sqlite3_stmt* stmt = nullptr;
+    std::vector<Contractor> matches;
 
+    // Prepare the SQL statement
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << "\n";
+        return matches; // Return default contractor
+    }
 
+    // Bind the variables to the prepared statement
+    if (sqlite3_bind_int(stmt, 1, rate) != SQLITE_OK) {
+        std::cerr << "Failed to bind rate: " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+        return matches; // Return default contractor
+    }
 
+    if (sqlite3_bind_text(stmt, 2, skillset.c_str(), -1, SQLITE_STATIC) != SQLITE_OK) {
+        std::cerr << "Failed to bind skillset: " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+        return matches; // Return default contractor
+    }
 
+    // Execute the statement and fetch results
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        Contractor c;
+        c.id = sqlite3_column_int(stmt, 0);
+        c.name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        c.skillset = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        c.rate = sqlite3_column_int(stmt, 3);
+        matches.push_back(c);
+    }
 
-std::priority_queue<Job, std::vector<Job>, JobComparator> jobs;
-
-void addJob(std::string description, std::string requiredSkill, float price, int urgency) {
-    Job j = {description, requiredSkill, price, urgency};
-    jobs.push(j);
-    std::cout << "SUCCESS: Job added!\n";
+    // Finalize the statement
+    sqlite3_finalize(stmt);
+    return matches;
 }
+
+
 
 #endif //FUNCTIONS_H

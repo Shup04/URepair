@@ -7,11 +7,10 @@
 
 // Define Contractor struct
 struct Contractor {
-    int id;
-    std::string name;
-    std::vector<std::string> skillset;
-    float minPrice;
-    float maxPrice;
+    int id = 0;
+    std::string name = "";
+    int rate = 0;
+    std::string skillset = "";
 };
 
 // Define Job struct

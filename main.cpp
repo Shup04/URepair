@@ -45,6 +45,14 @@ int main(int argc, char* argv[]) {
         else if (operation == "updateContractor" && argc == 6) {
             updateContractor(db, std::stoi(argv[2]), argv[3], std::stoi(argv[4]), argv[5]);
         }
+
+        else if (operation == "searchContractors" && argc == 4) {
+            std::vector<Contractor> matches = searchContractors(db, std::stoi(argv[2]), argv[3]);
+            
+            for (auto &Contractor : matches) {
+                std::cout << Contractor.name << std::endl;
+            }
+        }
         
         else if (operation == "deleteDB") {
             std::filesystem::remove("urepair.db");
