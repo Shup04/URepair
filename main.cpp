@@ -41,6 +41,10 @@ int main(int argc, char* argv[]) {
         else if (operation == "deleteContractor" && argc == 3) {
             deleteContractor(db, std::stoi(argv[2]));
         }
+
+        else if (operation == "updateContractor" && argc == 6) {
+            updateContractor(db, std::stoi(argv[2]), argv[3], std::stoi(argv[4]), argv[5]);
+        }
         
         else if (operation == "deleteDB") {
             std::filesystem::remove("urepair.db");

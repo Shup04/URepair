@@ -11,7 +11,8 @@
 // Implementations for readability
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset);
 void listContractors(sqlite3* db);
-
+void deleteContractor(sqlite3* db, const int& id);
+void updateContractor(sqlite3* db, const int& id, const std::string& name, const int& rate,  const std::string& skillset);
 
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset) {
     const char* sql = "INSERT INTO contractors (name, rate, skillset) VALUES (?, ?, ?);";
@@ -89,16 +90,37 @@ void deleteContractor(sqlite3* db, const int& id) {
     sqlite3_finalize(stmt);
 }
 
+void updateContractor(sqlite3* db, const int& id, const std::string& name, const int& rate,  const std::string& skillset) {
+    const char* sql = "UPDATE contractors SET name = ?, rate = ?, skillset = ? WHERE id = ?;";
+    sqlite3_stmt* stmt = nullptr;
 
-/*
-std::vector<Contractor> contractors;
+    // Prepare the SQL statement
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << "\n";
+        return;
+    }
 
-void registerContractor(std::string name, std::vector<std::string> skillset, float minPrice, float maxPrice) {
-    Contractor c = {name, skillset, minPrice, maxPrice};
-    contractors.push_back(c);
-    std::cout << "SUCCESS: Contractor registered!\n";
+    // Bind the variables to the prepared statement
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC); 
+    sqlite3_bind_int(stmt, 2, rate);                            
+    sqlite3_bind_text(stmt, 3, skillset.c_str(), -1, SQLITE_STATIC); 
+    sqlite3_bind_int(stmt, 4, id);                            
+
+    // Execute the statement
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        std::cerr << "Failed to execute statement: " << sqlite3_errmsg(db) << "\n";
+    } else {
+        std::cout << "Updated successfully!\n";
+    }
+
+    // Finalize the statement
+    sqlite3_finalize(stmt);
 }
-*/
+
+
+
+
+
 
 std::priority_queue<Job, std::vector<Job>, JobComparator> jobs;
 
