@@ -8,12 +8,21 @@
 #include "structs.h"
 #include <sqlite3.h>
 
-// Implementations for readability
+// Contractor Helper Functions
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset);
 std::vector<Contractor> listContractors(sqlite3* db);
 void deleteContractor(sqlite3* db, const int& id);
 void updateContractor(sqlite3* db, const int& id, const std::string& name, const int& rate,  const std::string& skillset);
 std::vector<Contractor> searchContractors(sqlite3* db, const int& rate, const std::string& skillset);
+Contractor getContractor(sqlite3* db, const int& id);
+
+// Job Helper Functions
+void addJob(sqlite3* db, const std::string& description, const std::string& requiredSkill, float price, int urgency);
+std::vector<Job> listJobs(sqlite3* db);
+void deleteJob(sqlite3* db, int jobId);
+void updateJob(sqlite3* db, int jobId, const std::string& field, const std::string& newValue);
+std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId);
+
 
 // Contractor Fucntions
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset) {
@@ -75,6 +84,37 @@ std::vector<Contractor> listContractors(sqlite3* db) {
 
     sqlite3_finalize(stmt);
     return contractors;
+}
+
+Contractor getContractor(sqlite3* db, const int& id) {
+    const char* sql = "SELECT * FROM contractors WHERE id = ?;";
+    sqlite3_stmt* stmt = nullptr;
+    Contractor c;
+
+    // Prepare the SQL statement
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << "\n";
+        return c; // Return default contractor
+    }
+
+    // Bind the id to the prepared statement
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
+        std::cerr << "Failed to bind id: " << sqlite3_errmsg(db) << "\n";
+        sqlite3_finalize(stmt);
+        return c; // Return default contractor
+    }
+
+    // Execute the statement
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        c.id = sqlite3_column_int(stmt, 0);
+        c.name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        c.skillset = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        c.rate = sqlite3_column_int(stmt, 3);
+    }
+
+    // Finalize the statement
+    sqlite3_finalize(stmt);
+    return c;
 }
 
 void deleteContractor(sqlite3* db, const int& id) {
@@ -168,6 +208,8 @@ std::vector<Contractor> searchContractors(sqlite3* db, const int& rate, const st
     return matches;
 }
 
+
+// Job Functions
 void addJob(sqlite3* db, const std::string& description, const std::string& requiredSkill, float price, int urgency) {
     const char* sql = "INSERT INTO jobs (description, requiredSkill, price, urgency) VALUES (?, ?, ?, ?);";
     sqlite3_stmt* stmt = nullptr;
@@ -282,8 +324,17 @@ void updateJob(sqlite3* db, int jobId, const std::string& field, const std::stri
     sqlite3_finalize(stmt);
 }
 
-void matchJobsToContractor(sqlite3* db, int contractorId) {
+std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId) {
+    vector<Job> allJobs = listJobs(db);
+    Contractor c = getContractor(db, contractorId);
+    vector<Job> matches;
 
+    for (const auto& job : allJobs) {
+        if ((job.requiredSkill == c.skillset) && (job.price <= c.rate)) {
+           matches.push_back(job); 
+        }
+    }
+    return matches
 }
 
 #endif //FUNCTIONS_H
