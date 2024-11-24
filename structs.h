@@ -15,10 +15,11 @@ struct Contractor {
 
 // Define Job struct
 struct Job {
-    std::string description;
-    std::string requiredSkill;
-    float price;
-    int urgency; // Lower value = higher urgency
+    int id = 0;
+    std::string description = "";
+    std::string requiredSkill = "";
+    float price = 0.0;
+    int urgency = 0; // Lower value = higher urgency
 };
 
 // Define a comparator for Job priority
