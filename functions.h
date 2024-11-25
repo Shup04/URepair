@@ -29,6 +29,8 @@ std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs);
 Job getMostUrgentJob(std::priority_queue<Job, std::vector<Job>, JobComparator>& jobQueue);
 
 // BST Functions
+BST<Job, JobComparator> generateJobBST(sqlite3* db);
+BST<Contractor, ContractorComparator> generateContractorBST(sqlite3* db);
 Contractor searchContractorInBST(sqlite3* db, int rate, const std::string& skillset);
 std::vector<Contractor> searchContractorsByRateRange(BST<Contractor, ContractorComparator>& contractorTree, int minRate, int maxRate);
 Contractor getLowestRateContractor(BST<Contractor, ContractorComparator>& contractorTree);
@@ -36,6 +38,9 @@ Contractor getHighestRateContractor(BST<Contractor, ContractorComparator>& contr
 std::vector<Contractor> matchContractorsToSkill(BST<Contractor, ContractorComparator>& contractorTree, const std::string& skillset);
 std::vector<Job> searchJobsByPriceRange(BST<Job, JobPriceComparator>& jobTree, float minPrice, float maxPrice);
 std::vector<Job> matchJobsToContractorRate(BST<Job, JobPriceComparator>& jobTree, int contractorRate);
+
+
+
 
 // Contractor Fucntions
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset) {
@@ -64,7 +69,6 @@ void addContractor(sqlite3* db, const std::string& name, const int& rate,  const
     // Finalize the statement
     sqlite3_finalize(stmt);
 }
-
 std::vector<Contractor> listContractors(sqlite3* db) {
     const char* sql = "SELECT * FROM contractors;";
     sqlite3_stmt* stmt;
@@ -98,7 +102,6 @@ std::vector<Contractor> listContractors(sqlite3* db) {
     sqlite3_finalize(stmt);
     return contractors;
 }
-
 Contractor getContractor(sqlite3* db, const int& id) {
     const char* sql = "SELECT * FROM contractors WHERE id = ?;";
     sqlite3_stmt* stmt = nullptr;
@@ -129,7 +132,6 @@ Contractor getContractor(sqlite3* db, const int& id) {
     sqlite3_finalize(stmt);
     return c;
 }
-
 void deleteContractor(sqlite3* db, const int& id) {
     const char* sql = "DELETE FROM contractors WHERE id = ?;";
     sqlite3_stmt* stmt = nullptr;
@@ -153,7 +155,6 @@ void deleteContractor(sqlite3* db, const int& id) {
     // Finalize the statement
     sqlite3_finalize(stmt);
 }
-
 void updateContractor(sqlite3* db, const int& id, const std::string& name, const int& rate,  const std::string& skillset) {
     const char* sql = "UPDATE contractors SET name = ?, rate = ?, skillset = ? WHERE id = ?;";
     sqlite3_stmt* stmt = nullptr;
@@ -180,7 +181,6 @@ void updateContractor(sqlite3* db, const int& id, const std::string& name, const
     // Finalize the statement
     sqlite3_finalize(stmt);
 }
-
 std::vector<Contractor> searchContractors(sqlite3* db, const int& rate, const std::string& skillset) {
     //Contractor c; // Declare contractor object
     const char* sql = "SELECT * FROM contractors WHERE rate <= ? AND skillset = ?;";
@@ -249,7 +249,6 @@ void addJob(sqlite3* db, const std::string& description, const std::string& requ
     // Finalize the statement
     sqlite3_finalize(stmt);
 }
-
 std::vector<Job> listJobs(sqlite3* db) {
     const char* sql = "SELECT * FROM jobs;";
     sqlite3_stmt* stmt = nullptr;
@@ -287,7 +286,6 @@ std::vector<Job> listJobs(sqlite3* db) {
     sqlite3_finalize(stmt);
     return jobs;
 }
-
 void deleteJob(sqlite3* db, int jobId) {
     const char* sql = "DELETE FROM jobs WHERE id = ?;";
     sqlite3_stmt* stmt = nullptr;
@@ -311,7 +309,6 @@ void deleteJob(sqlite3* db, int jobId) {
     // Finalize the statement
     sqlite3_finalize(stmt);
 }
-
 void updateJob(sqlite3* db, int jobId, const std::string& field, const std::string& newValue) {
     std::string sql = "UPDATE jobs SET " + field + " = ? WHERE id = ?;";
     sqlite3_stmt* stmt = nullptr;
@@ -336,7 +333,6 @@ void updateJob(sqlite3* db, int jobId, const std::string& field, const std::stri
     // Finalize the statement
     sqlite3_finalize(stmt);
 }
-
 std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId) {
     std::vector<Job> allJobs = listJobs(db);
     Contractor c = getContractor(db, contractorId);
@@ -390,7 +386,6 @@ void merge(std::vector<Contractor>& contractors, int left, int mid, int right) {
         ++k;
     }
 }
-
 void mergeSort(std::vector<Contractor>& contractors, int left, int right) {
     if (left < right) {
         int mid = left + (right - left) / 2;
@@ -401,12 +396,10 @@ void mergeSort(std::vector<Contractor>& contractors, int left, int right) {
         merge(contractors, left, mid, right);   // Merge the two halves
     }
 }
-
 std::vector<Contractor> sortContractorsByRate(std::vector<Contractor>& contractors) {
     mergeSort(contractors, 0, contractors.size() - 1);
     return contractors;
 }
-
 void merge(std::vector<Job>& jobs, int left, int mid, int right) {
     int n1 = mid - left + 1;
     int n2 = right - mid;
@@ -443,7 +436,6 @@ void merge(std::vector<Job>& jobs, int left, int mid, int right) {
         ++k;
     }
 }
-
 void mergeSort(std::vector<Job>& jobs, int left, int right) {
     if (left < right) {
         int mid = left + (right - left) / 2;
@@ -454,7 +446,6 @@ void mergeSort(std::vector<Job>& jobs, int left, int right) {
         merge(jobs, left, mid, right);
     }
 }
-
 std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs) {
     mergeSort(jobs, 0, jobs.size() - 1);
     return jobs;
@@ -469,7 +460,6 @@ std::priority_queue<Job, std::vector<Job>, JobComparator> prioritizeJobs(std::ve
     }
     return pq;
 }
-
 Job getMostUrgentJob(std::priority_queue<Job, std::vector<Job>, JobComparator>& jobQueue) {
     if (jobQueue.empty()) {
         std::cerr << "Job queue is empty!\n";
@@ -497,9 +487,10 @@ BST<Contractor, ContractorComparator> generateContractorBST(sqlite3* db) {
 }
 
 // Generate Job BST DB
-BST<Job, JobComparator> generateJobBST(sqlite3* db) {
+template <typename Comparator = JobComparator>
+BST<Job, Comparator> generateJobBST(sqlite3* db) {
     std::vector<Job> jobs = listJobs(db); // Fetch jobs from the database
-    BST<Job, JobComparator> jobTree;
+    BST<Job, Comparator> jobTree;
 
     for (const auto& job : jobs) {
         jobTree.insert(job);
@@ -507,6 +498,7 @@ BST<Job, JobComparator> generateJobBST(sqlite3* db) {
 
     return jobTree;
 }
+
 
 // Search Contractor based on rating/skillset
 Contractor searchContractorInBST(sqlite3* db, int rate, const std::string& skillset) {
@@ -525,7 +517,6 @@ Contractor searchContractorInBST(sqlite3* db, int rate, const std::string& skill
         throw std::runtime_error("Contractor not found!");
     }
 }
-
 std::vector<Contractor> searchContractorsByRateRange(BST<Contractor, ContractorComparator>& contractorTree, int minRate, int maxRate) {
     std::vector<Contractor> result;
     auto allContractors = contractorTree.inOrder(); // Get all contractors in sorted order
@@ -536,7 +527,6 @@ std::vector<Contractor> searchContractorsByRateRange(BST<Contractor, ContractorC
     }
     return result;
 }
-
 Contractor getLowestRateContractor(BST<Contractor, ContractorComparator>& contractorTree) {
     auto sortedContractors = contractorTree.inOrder(); // Sorted in ascending order
     if (!sortedContractors.empty()) {
@@ -544,7 +534,6 @@ Contractor getLowestRateContractor(BST<Contractor, ContractorComparator>& contra
     }
     throw std::runtime_error("No contractors available!");
 }
-
 Contractor getHighestRateContractor(BST<Contractor, ContractorComparator>& contractorTree) {
     auto sortedContractors = contractorTree.inOrder(); // Sorted in ascending order
     if (!sortedContractors.empty()) {
@@ -552,7 +541,6 @@ Contractor getHighestRateContractor(BST<Contractor, ContractorComparator>& contr
     }
     throw std::runtime_error("No contractors available!");
 }
-
 std::vector<Contractor> matchContractorsToSkill(BST<Contractor, ContractorComparator>& contractorTree, const std::string& skillset) {
     std::vector<Contractor> result;
     auto allContractors = contractorTree.inOrder(); // Sorted contractors
@@ -563,7 +551,6 @@ std::vector<Contractor> matchContractorsToSkill(BST<Contractor, ContractorCompar
     }
     return result;
 }
-
 std::vector<Job> searchJobsByPriceRange(BST<Job, JobPriceComparator>& jobTree, float minPrice, float maxPrice) {
     std::vector<Job> result;
     auto allJobs = jobTree.inOrder(); // Sorted jobs
@@ -574,7 +561,6 @@ std::vector<Job> searchJobsByPriceRange(BST<Job, JobPriceComparator>& jobTree, f
     }
     return result;
 }
-
 std::vector<Job> matchJobsToContractorRate(BST<Job, JobPriceComparator>& jobTree, int contractorRate) {
     std::vector<Job> result;
     auto allJobs = jobTree.inOrder(); // Sorted jobs
