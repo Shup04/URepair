@@ -26,9 +26,16 @@ std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId);
 // Data Structure Functions
 std::vector<Contractor> sortContractorsByRate(std::vector<Contractor>& contractors);
 std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs);
-
 Job getMostUrgentJob(std::priority_queue<Job, std::vector<Job>, JobComparator>& jobQueue);
 
+// BST Functions
+Contractor searchContractorInBST(sqlite3* db, int rate, const std::string& skillset);
+std::vector<Contractor> searchContractorsByRateRange(BST<Contractor, ContractorComparator>& contractorTree, int minRate, int maxRate);
+Contractor getLowestRateContractor(BST<Contractor, ContractorComparator>& contractorTree);
+Contractor getHighestRateContractor(BST<Contractor, ContractorComparator>& contractorTree);
+std::vector<Contractor> matchContractorsToSkill(BST<Contractor, ContractorComparator>& contractorTree, const std::string& skillset);
+std::vector<Job> searchJobsByPriceRange(BST<Job, JobPriceComparator>& jobTree, float minPrice, float maxPrice);
+std::vector<Job> matchJobsToContractorRate(BST<Job, JobPriceComparator>& jobTree, int contractorRate);
 
 // Contractor Fucntions
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset) {
