@@ -80,6 +80,41 @@ int main(int argc, char* argv[]) {
             updateJob(db, std::stoi(argv[2]), argv[3], argv[4]);
         }
 
+        // Sort by contractor rating
+        else if (operation == "sortContractorsByRate") {
+            std::vector<Contractor> contractors = listContractors(db);
+            std::vector<Contractor> sortedContractors = sortContractorsByRate(contractors);
+            for (auto &Contractor : sortedContractors) {
+                std::cout << Contractor.name << std::endl;
+            }
+        }
+
+        // Sort jobs by price
+        else if (operation == "sortJobsByPrice") {
+            std::vector<Job> jobs = listJobs(db);
+            std::vector<Job> sortedJobs = sortJobsByPrice(jobs);
+            for (auto &Job : sortedJobs) {
+                std::cout << Job.description << std::endl;
+            }
+        }
+
+        // prioritize Jobs
+        else if (operation == "prioritizeJobs") {
+            std::vector<Job> jobs = listJobs(db);
+            std::priority_queue<Job, std::vector<Job>, JobComparator> pq = prioritizeJobs(jobs);
+            while (!pq.empty()) {
+                std::cout << pq.top().description << std::endl;
+                pq.pop();
+            }
+        }
+
+        //get most urgent job
+        else if (operation == "getMostUrgentJob") {
+            std::vector<Job> jobs = listJobs(db);
+            Job mostUrgentJob = getMostUrgentJob(jobs);
+            std::cout << mostUrgentJob.description << std::endl;
+        }
+
         
 
         // deletes the database

@@ -337,4 +337,126 @@ std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId) {
     return matches
 }
 
+// Algorithm Functions
+// Merge Sort Algorithm
+std::vector<Contractor> sortContractorsByRate(std::vector<Contractor>& contractors) {
+    auto merge = [](std::vector<Contractor>& contractors, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        std::vector<Contractor> L(n1);
+        std::vector<Contractor> R(n2);
+
+        for (int i = 0; i < n1; ++i)
+            L[i] = contractors[left + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = contractors[mid + 1 + j];
+
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            if (L[i].rate <= R[j].rate) {
+                contractors[k] = L[i];
+                ++i;
+            } else {
+                contractors[k] = R[j];
+                ++j;
+            }
+            ++k;
+        }
+
+        while (i < n1) {
+            contractors[k] = L[i];
+            ++i;
+            ++k;
+        }
+
+        while (j < n2) {
+            contractors[k] = R[j];
+            ++j;
+            ++k;
+        }
+    };
+
+    auto mergeSort = [&](std::vector<Contractor>& contractors, int left, int right, auto& mergeSortRef) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+
+            mergeSortRef(contractors, left, mid, mergeSortRef);
+            mergeSortRef(contractors, mid + 1, right, mergeSortRef);
+
+            merge(contractors, left, mid, right);
+        }
+    };
+
+    mergeSort(contractors, 0, contractors.size() - 1, mergeSort);
+    return contractors;
+}
+
+std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs) {
+    auto merge = [](std::vector<Job>& jobs, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        std::vector<Job> L(n1);
+        std::vector<Job> R(n2);
+
+        for (int i = 0; i < n1; ++i)
+            L[i] = jobs[left + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = jobs[mid + 1 + j];
+
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            if (L[i].price <= R[j].price) {
+                jobs[k] = L[i];
+                ++i;
+            } else {
+                jobs[k] = R[j];
+                ++j;
+            }
+            ++k;
+        }
+
+        while (i < n1) {
+            jobs[k] = L[i];
+            ++i;
+            ++k;
+        }
+
+        while (j < n2) {
+            jobs[k] = R[j];
+            ++j;
+            ++k;
+        }
+    };
+
+    auto mergeSort = [&](std::vector<Job>& jobs, int left, int right, auto& mergeSortRef) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+
+            mergeSortRef(jobs, left, mid, mergeSortRef);
+            mergeSortRef(jobs, mid + 1, right, mergeSortRef);
+
+            merge(jobs, left, mid, right);
+        }
+    };
+
+    mergeSort(jobs, 0, jobs.size() - 1, mergeSort);
+    return jobs;
+}
+
+// Priority Heap
+std::priority_queue<Job, std::vector<Job>, JobComparator> prioritizeJobs(std::vector<Job>& jobs) {
+    std::priority_queue<Job, std::vector<Job>, JobComparator> pq;
+    for (const auto& job : jobs) {
+        pq.push(job);
+    }
+    return pq;
+}
+
+Job getMostUrgentJob(std::priority_queue<Job>& jobQueue);
+
+
+
+
 #endif //FUNCTIONS_H
