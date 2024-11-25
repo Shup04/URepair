@@ -11,6 +11,11 @@ struct Contractor {
     std::string name = "";
     int rate = 0;
     std::string skillset = "";
+
+    // Define operator==
+    bool operator==(const Contractor& other) const {
+        return id == other.id; // Compare based on ID
+    }
 };
 
 // Define Job struct
@@ -38,13 +43,19 @@ struct ContractorComparator {
     }
 };
 
+struct JobPriceComparator {
+    bool operator()(const Job& a, const Job& b) const {
+        return a.price < b.price; // Sort by price in ascending order
+    }
+};
+
 template <typename T>
 struct BSTNode {
-    T data; // either contractor or Job
-    BSTNode *Left;
-    BSTNode *Right;
+    T data;               // Store the data (Job, Contractor, etc.)
+    BSTNode* left;        // Pointer to the left child
+    BSTNode* right;       // Pointer to the right child
 
-    BSTNode(const T &value) : data(value), left(nullptr), right(nullptr) {}
+    BSTNode(const T& value) : data(value), left(nullptr), right(nullptr) {} // Constructor
 };
 
 template <typename T, typename Compare>

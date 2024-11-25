@@ -343,6 +343,7 @@ std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId) {
     return matches;
 }
 
+
 // Algorithm Functions
 // Merge Sort Algorithm
 // Contractor struct definition
@@ -452,6 +453,7 @@ std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs) {
     return jobs;
 }
 
+
 // Priority Heap
 std::priority_queue<Job, std::vector<Job>, JobComparator> prioritizeJobs(std::vector<Job>& jobs) {
     std::priority_queue<Job, std::vector<Job>, JobComparator> pq;
@@ -473,6 +475,109 @@ Job getMostUrgentJob(std::priority_queue<Job, std::vector<Job>, JobComparator>& 
     return mostUrgentJob;
 }
 
+
+// BST Functions
+// Generate Contractor BST given DB
+BST<Contractor, ContractorComparator> generateContractorBST(sqlite3* db) {
+    std::vector<Contractor> contractors = listContractors(db);
+    BST<Contractor, ContractorComparator> contractorTree;
+
+    for (const auto& contractor : contractors) {
+        contractorTree.insert(contractor);
+    }
+
+    return contractorTree;
+}
+
+// Generate Job BST DB
+BST<Job, JobComparator> generateJobBST(sqlite3* db) {
+    std::vector<Job> jobs = listJobs(db); // Fetch jobs from the database
+    BST<Job, JobComparator> jobTree;
+
+    for (const auto& job : jobs) {
+        jobTree.insert(job);
+    }
+
+    return jobTree;
+}
+
+// Search Contractor based on rating/skillset
+Contractor searchContractorInBST(sqlite3* db, int rate, const std::string& skillset) {
+    BST<Contractor, ContractorComparator> contractorTree = generateContractorBST(db);
+
+    // Search logic: Define a target contractor object
+    Contractor target;
+    if (rate) target.rate = rate; // Assume rate is part of the `Contractor` struct
+    if (!skillset.empty()) target.skillset = skillset; // This might not work directly in BST; adjust comparison logic
+
+    BSTNode<Contractor>* result = contractorTree.search(target);
+
+    if (result) {
+        return result->data;
+    } else {
+        throw std::runtime_error("Contractor not found!");
+    }
+}
+
+std::vector<Contractor> searchContractorsByRateRange(BST<Contractor, ContractorComparator>& contractorTree, int minRate, int maxRate) {
+    std::vector<Contractor> result;
+    auto allContractors = contractorTree.inOrder(); // Get all contractors in sorted order
+    for (const auto& contractor : allContractors) {
+        if (contractor.rate >= minRate && contractor.rate <= maxRate) {
+            result.push_back(contractor);
+        }
+    }
+    return result;
+}
+
+Contractor getLowestRateContractor(BST<Contractor, ContractorComparator>& contractorTree) {
+    auto sortedContractors = contractorTree.inOrder(); // Sorted in ascending order
+    if (!sortedContractors.empty()) {
+        return sortedContractors.front(); // First contractor in sorted order
+    }
+    throw std::runtime_error("No contractors available!");
+}
+
+Contractor getHighestRateContractor(BST<Contractor, ContractorComparator>& contractorTree) {
+    auto sortedContractors = contractorTree.inOrder(); // Sorted in ascending order
+    if (!sortedContractors.empty()) {
+        return sortedContractors.back(); // Last contractor in sorted order
+    }
+    throw std::runtime_error("No contractors available!");
+}
+
+std::vector<Contractor> matchContractorsToSkill(BST<Contractor, ContractorComparator>& contractorTree, const std::string& skillset) {
+    std::vector<Contractor> result;
+    auto allContractors = contractorTree.inOrder(); // Sorted contractors
+    for (const auto& contractor : allContractors) {
+        if (contractor.skillset.find(skillset) != std::string::npos) { // Check if skillset matches
+            result.push_back(contractor);
+        }
+    }
+    return result;
+}
+
+std::vector<Job> searchJobsByPriceRange(BST<Job, JobPriceComparator>& jobTree, float minPrice, float maxPrice) {
+    std::vector<Job> result;
+    auto allJobs = jobTree.inOrder(); // Sorted jobs
+    for (const auto& job : allJobs) {
+        if (job.price >= minPrice && job.price <= maxPrice) {
+            result.push_back(job);
+        }
+    }
+    return result;
+}
+
+std::vector<Job> matchJobsToContractorRate(BST<Job, JobPriceComparator>& jobTree, int contractorRate) {
+    std::vector<Job> result;
+    auto allJobs = jobTree.inOrder(); // Sorted jobs
+    for (const auto& job : allJobs) {
+        if (job.price >= contractorRate) { // Only jobs meeting the contractor's rate
+            result.push_back(job);
+        }
+    }
+    return result;
+}
 
 
 
