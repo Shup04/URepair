@@ -1,182 +1,152 @@
+
 const { exec } = require('child_process');
+const util = require('util');
+const execPromise = util.promisify(exec);
 
-// Adds a new contractor
-function addContractor(name, rate, skillset) {
-    exec(`./backend addContractor "${name}" ${rate} "${skillset}"`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function addContractor(name, rate, skillset) {
+    try {
+        const { stdout } = await execPromise(`./backend addContractor "${name}" ${rate} "${skillset}"`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Lists all contractors
-function listContractors() {
-    exec('./backend listContractors', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function listContractors() {
+    try {
+        const { stdout } = await execPromise('./backend listContractors');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Deletes a contractor
-function deleteContractor(id) {
-    exec(`./backend deleteContractor ${id}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function deleteContractor(id) {
+    try {
+        const { stdout } = await execPromise(`./backend deleteContractor ${id}`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Updates a contractor
-function updateContractor(id, name, rate, skillset) {
-    exec(`./backend updateContractor ${id} "${name}" ${rate} "${skillset}"`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function updateContractor(id, name, rate, skillset) {
+    try {
+        const { stdout } = await execPromise(`./backend updateContractor ${id} "${name}" ${rate} "${skillset}"`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Searches contractors by rate and skillset
-function searchContractors(rate, skillset) {
-    exec(`./backend searchContractors ${rate} "${skillset}"`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function searchContractors(rate, skillset) {
+    try {
+        const { stdout } = await execPromise(`./backend searchContractors ${rate} "${skillset}"`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Adds a new job
-function addJob(description, requiredSkill, price, urgency) {
-    exec(`./backend addJob "${description}" "${requiredSkill}" ${price} ${urgency}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function addJob(description, requiredSkill, price, urgency) {
+    try {
+        const { stdout } = await execPromise(`./backend addJob "${description}" "${requiredSkill}" ${price} ${urgency}`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Lists all jobs
-function listJobs() {
-    exec('./backend listJobs', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function listJobs() {
+    try {
+        const { stdout } = await execPromise('./backend listJobs');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Deletes a job
-function deleteJob(id) {
-    exec(`./backend deleteJob ${id}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function deleteJob(id) {
+    try {
+        const { stdout } = await execPromise(`./backend deleteJob ${id}`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Updates a job
-function updateJob(id, field, newValue) {
-    exec(`./backend updateJob ${id} "${field}" "${newValue}"`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function updateJob(id, field, newValue) {
+    try {
+        const { stdout } = await execPromise(`./backend updateJob ${id} "${field}" "${newValue}"`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Sorts contractors by rate
-function sortContractorsByRate() {
-    exec('./backend sortContractorsByRate', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function sortContractorsByRate() {
+    try {
+        const { stdout } = await execPromise('./backend sortContractorsByRate');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Sorts jobs by price
-function sortJobsByPrice() {
-    exec('./backend sortJobsByPrice', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function sortJobsByPrice() {
+    try {
+        const { stdout } = await execPromise('./backend sortJobsByPrice');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Prioritizes jobs by urgency
-function prioritizeJobs() {
-    exec('./backend prioritizeJobs', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function prioritizeJobs() {
+    try {
+        const { stdout } = await execPromise('./backend prioritizeJobs');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Gets the most urgent job
-function getMostUrgentJob() {
-    exec('./backend getMostUrgentJob', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function getMostUrgentJob() {
+    try {
+        const { stdout } = await execPromise('./backend getMostUrgentJob');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Searches jobs by price range
-function searchJobsByPriceRange(minPrice, maxPrice) {
-    exec(`./backend searchJobsByPriceRange ${minPrice} ${maxPrice}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function searchJobsByPriceRange(minPrice, maxPrice) {
+    try {
+        const { stdout } = await execPromise(`./backend searchJobsByPriceRange ${minPrice} ${maxPrice}`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Matches jobs to contractor rate
-function matchJobsToContractorRate(contractorRate) {
-    exec(`./backend matchJobsToContractorRate ${contractorRate}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function matchJobsToContractorRate(contractorRate) {
+    try {
+        const { stdout } = await execPromise(`./backend matchJobsToContractorRate ${contractorRate}`);
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Deletes the database
-function deleteDB() {
-    exec('./backend deleteDB', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${stderr}`);
-        } else {
-            console.log(stdout);
-        }
-    });
+async function deleteDB() {
+    try {
+        const { stdout } = await execPromise('./backend deleteDB');
+        return stdout.trim();
+    } catch (error) {
+        throw new Error(error.stderr.trim());
+    }
 }
 
-// Exports for Node.js
 module.exports = {
     addContractor,
     listContractors,
