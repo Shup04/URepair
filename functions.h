@@ -325,125 +325,127 @@ void updateJob(sqlite3* db, int jobId, const std::string& field, const std::stri
 }
 
 std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId) {
-    vector<Job> allJobs = listJobs(db);
+    std::vector<Job> allJobs = listJobs(db);
     Contractor c = getContractor(db, contractorId);
-    vector<Job> matches;
+    std::vector<Job> matches;
 
     for (const auto& job : allJobs) {
         if ((job.requiredSkill == c.skillset) && (job.price <= c.rate)) {
            matches.push_back(job); 
         }
     }
-    return matches
+    return matches;
 }
 
 // Algorithm Functions
 // Merge Sort Algorithm
-std::vector<Contractor> sortContractorsByRate(std::vector<Contractor>& contractors) {
-    auto merge = [](std::vector<Contractor>& contractors, int left, int mid, int right) {
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
+// Contractor struct definition
+void merge(std::vector<Contractor>& contractors, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-        std::vector<Contractor> L(n1);
-        std::vector<Contractor> R(n2);
+    std::vector<Contractor> L(n1);
+    std::vector<Contractor> R(n2);
 
-        for (int i = 0; i < n1; ++i)
-            L[i] = contractors[left + i];
-        for (int j = 0; j < n2; ++j)
-            R[j] = contractors[mid + 1 + j];
+    for (int i = 0; i < n1; ++i)
+        L[i] = contractors[left + i];
+    for (int j = 0; j < n2; ++j)
+        R[j] = contractors[mid + 1 + j];
 
-        int i = 0, j = 0, k = left;
-        while (i < n1 && j < n2) {
-            if (L[i].rate <= R[j].rate) {
-                contractors[k] = L[i];
-                ++i;
-            } else {
-                contractors[k] = R[j];
-                ++j;
-            }
-            ++k;
-        }
-
-        while (i < n1) {
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i].rate <= R[j].rate) {
             contractors[k] = L[i];
             ++i;
-            ++k;
-        }
-
-        while (j < n2) {
+        } else {
             contractors[k] = R[j];
             ++j;
-            ++k;
         }
-    };
+        ++k;
+    }
 
-    auto mergeSort = [&](std::vector<Contractor>& contractors, int left, int right, auto& mergeSortRef) {
-        if (left < right) {
-            int mid = left + (right - left) / 2;
+    while (i < n1) {
+        contractors[k] = L[i];
+        ++i;
+        ++k;
+    }
 
-            mergeSortRef(contractors, left, mid, mergeSortRef);
-            mergeSortRef(contractors, mid + 1, right, mergeSortRef);
+    while (j < n2) {
+        contractors[k] = R[j];
+        ++j;
+        ++k;
+    }
+}
 
-            merge(contractors, left, mid, right);
-        }
-    };
+void mergeSort(std::vector<Contractor>& contractors, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
 
-    mergeSort(contractors, 0, contractors.size() - 1, mergeSort);
+        mergeSort(contractors, left, mid);       // Sort the left half
+        mergeSort(contractors, mid + 1, right); // Sort the right half
+
+        merge(contractors, left, mid, right);   // Merge the two halves
+    }
+}
+
+std::vector<Contractor> sortContractorsByRate(std::vector<Contractor>& contractors) {
+    mergeSort(contractors, 0, contractors.size() - 1);
     return contractors;
 }
 
-std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs) {
-    auto merge = [](std::vector<Job>& jobs, int left, int mid, int right) {
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
+void merge(std::vector<Job>& jobs, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-        std::vector<Job> L(n1);
-        std::vector<Job> R(n2);
+    std::vector<Job> L(n1);
+    std::vector<Job> R(n2);
 
-        for (int i = 0; i < n1; ++i)
-            L[i] = jobs[left + i];
-        for (int j = 0; j < n2; ++j)
-            R[j] = jobs[mid + 1 + j];
+    for (int i = 0; i < n1; ++i)
+        L[i] = jobs[left + i];
+    for (int j = 0; j < n2; ++j)
+        R[j] = jobs[mid + 1 + j];
 
-        int i = 0, j = 0, k = left;
-        while (i < n1 && j < n2) {
-            if (L[i].price <= R[j].price) {
-                jobs[k] = L[i];
-                ++i;
-            } else {
-                jobs[k] = R[j];
-                ++j;
-            }
-            ++k;
-        }
-
-        while (i < n1) {
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i].price <= R[j].price) {
             jobs[k] = L[i];
             ++i;
-            ++k;
-        }
-
-        while (j < n2) {
+        } else {
             jobs[k] = R[j];
             ++j;
-            ++k;
         }
-    };
+        ++k;
+    }
 
-    auto mergeSort = [&](std::vector<Job>& jobs, int left, int right, auto& mergeSortRef) {
-        if (left < right) {
-            int mid = left + (right - left) / 2;
+    while (i < n1) {
+        jobs[k] = L[i];
+        ++i;
+        ++k;
+    }
 
-            mergeSortRef(jobs, left, mid, mergeSortRef);
-            mergeSortRef(jobs, mid + 1, right, mergeSortRef);
+    while (j < n2) {
+        jobs[k] = R[j];
+        ++j;
+        ++k;
+    }
+}
 
-            merge(jobs, left, mid, right);
-        }
-    };
+void mergeSort(std::vector<Job>& jobs, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
 
-    mergeSort(jobs, 0, jobs.size() - 1, mergeSort);
+        mergeSort(jobs, left, mid);
+        mergeSort(jobs, mid + 1, right);
+
+        merge(jobs, left, mid, right);
+    }
+}
+
+std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs) {
+    mergeSort(jobs, 0, jobs.size() - 1);
     return jobs;
 }
+
 
 // Priority Heap
 std::priority_queue<Job, std::vector<Job>, JobComparator> prioritizeJobs(std::vector<Job>& jobs) {
