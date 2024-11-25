@@ -452,7 +452,6 @@ std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs) {
     return jobs;
 }
 
-
 // Priority Heap
 std::priority_queue<Job, std::vector<Job>, JobComparator> prioritizeJobs(std::vector<Job>& jobs) {
     std::priority_queue<Job, std::vector<Job>, JobComparator> pq;
