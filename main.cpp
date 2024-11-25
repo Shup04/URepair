@@ -113,11 +113,10 @@ int main(int argc, char* argv[]) {
         //get most urgent job
         else if (operation == "getMostUrgentJob") {
             std::vector<Job> jobs = listJobs(db);
-            Job mostUrgentJob = getMostUrgentJob(jobs);
+            std::priority_queue<Job, std::vector<Job>, JobComparator> priorityJobs = prioritizeJobs(jobs);
+            Job mostUrgentJob = getMostUrgentJob(priorityJobs);
             std::cout << mostUrgentJob.description << std::endl;
         }
-
-        
 
         // deletes the database
         else if (operation == "deleteDB") {

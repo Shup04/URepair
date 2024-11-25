@@ -23,6 +23,12 @@ void deleteJob(sqlite3* db, int jobId);
 void updateJob(sqlite3* db, int jobId, const std::string& field, const std::string& newValue);
 std::vector<Job> matchJobsToContractor(sqlite3* db, int contractorId);
 
+// Data Structure Functions
+std::vector<Contractor> sortContractorsByRate(std::vector<Contractor>& contractors);
+std::vector<Job> sortJobsByPrice(std::vector<Job>& jobs);
+
+Job getMostUrgentJob(std::priority_queue<Job, std::vector<Job>, JobComparator>& jobQueue);
+
 
 // Contractor Fucntions
 void addContractor(sqlite3* db, const std::string& name, const int& rate,  const std::string& skillset) {
@@ -456,7 +462,17 @@ std::priority_queue<Job, std::vector<Job>, JobComparator> prioritizeJobs(std::ve
     return pq;
 }
 
-Job getMostUrgentJob(std::priority_queue<Job>& jobQueue);
+Job getMostUrgentJob(std::priority_queue<Job, std::vector<Job>, JobComparator>& jobQueue) {
+    if (jobQueue.empty()) {
+        std::cerr << "Job queue is empty!\n";
+        return Job(); // Return default job
+    }
+
+    Job mostUrgentJob = jobQueue.top();
+    jobQueue.pop();
+
+    return mostUrgentJob;
+}
 
 
 

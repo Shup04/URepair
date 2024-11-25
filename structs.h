@@ -32,4 +32,70 @@ struct JobComparator {
     }
 };
 
+struct ContractorComparator {
+    bool operator()(const Contractor& a, const Contractor& b) {
+        return a.rate < b.rate; // Sort by rate in ascending order
+    }
+};
+
+template <typename T>
+struct BSTNode {
+    T data; // either contractor or Job
+    BSTNode *Left;
+    BSTNode *Right;
+
+    BSTNode(const T &value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+template <typename T, typename Compare>
+class BST {
+private:
+    BSTNode<T>* root;
+    Compare comparator;
+
+    BSTNode<T>* insert(BSTNode<T>* node, const T& value) {
+        if (node == nullptr) return new BSTNode<T>(value);
+        if (comparator(value, node->data)) {
+            node->left = insert(node->left, value);
+        } else {
+            node->right = insert(node->right, value);
+        }
+        return node;
+    }
+
+    BSTNode<T>* search(BSTNode<T>* node, const T& value) {
+        if (node == nullptr || node->data == value) return node;
+        if (comparator(value, node->data)) {
+            return search(node->left, value);
+        } else {
+            return search(node->right, value);
+        }
+    }
+
+    void inOrderTraversal(BSTNode<T>* node, std::vector<T>& result) {
+        if (node != nullptr) {
+            inOrderTraversal(node->left, result);
+            result.push_back(node->data);
+            inOrderTraversal(node->right, result);
+        }
+    }
+
+public:
+    BST() : root(nullptr) {}
+
+    void insert(const T& value) {
+        root = insert(root, value);
+    }
+
+    BSTNode<T>* search(const T& value) {
+        return search(root, value);
+    }
+
+    std::vector<T> inOrder() {
+        std::vector<T> result;
+        inOrderTraversal(root, result);
+        return result;
+    }
+};
+
 #endif // STRUCTS_H
